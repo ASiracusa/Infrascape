@@ -35,7 +35,7 @@ public class room_loader : MonoBehaviour {
 	private List<GameObject> treasureroomlist;
 	string recentdirection;
 
-	List<Room> roomlist = new List<Room>();
+	public List<Room> roomlist = new List<Room>();
 	GameObject[] roomloadarray;
 	List<GameObject> roomloadlist;
 	List<PTR> ptrlist = new List<PTR>();
@@ -56,6 +56,7 @@ public class room_loader : MonoBehaviour {
 		public int y;
 		public GameObject r;
 		public int level;
+		public bool visited;
 
 		public Room (int a, int b, GameObject c, int d) {
 
@@ -63,6 +64,7 @@ public class room_loader : MonoBehaviour {
 			y = b;
 			r = c;
 			level = d;
+			visited = false;
 
 		}
 
@@ -153,6 +155,7 @@ public class room_loader : MonoBehaviour {
 		baseroom.name = "room_1";
 
 		roomlist.Add (new Room (0, 0, baseroom, 0));
+		this.GetComponent<pause_controller> ().currentroom = roomlist [0];
 
 	}
 		
@@ -1208,9 +1211,16 @@ public class room_loader : MonoBehaviour {
 				}
 			}
 			else {
+				roomlist [r - 1].visited = true;
+				this.GetComponent<pause_controller> ().currentroom = roomlist [r - 1];
+				this.GetComponent<pause_controller> ().currentroom.level = roomlist [r - 1].level;
 				foreach (MeshRenderer go in curroom.GetComponentsInChildren<MeshRenderer>(true)) {
 					go.enabled = true;
 				}
+			}
+
+			if (roomlist [r - 1].visited) {
+				print (r);
 			}
 		}
 

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using RL = room_loader;
 
 public class pause_controller : MonoBehaviour {
 
-	public static bool GameIsPaused = false;
+	private static bool GameIsPaused = false;
 
+	public GameObject Roomloader;
 	public GameObject PauseMenu;
 	public GameObject GameMenu;
 
@@ -37,7 +39,8 @@ public class pause_controller : MonoBehaviour {
 	public Button ResumeButton;
 	public KeyCode PauseButton;
 
-	private Resolution screenres;
+	private string currentpage;
+	public RL.Room currentroom;
 
 	void Start () {
 
@@ -52,6 +55,15 @@ public class pause_controller : MonoBehaviour {
 		ItemLogHider.onClick.AddListener (HideItemLog);
 		CurrItemHider.onClick.AddListener (HideCurrItem);
 		InvLogHider.onClick.AddListener (HideInvLog);
+
+		GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/RightPage/NextPage").GetComponent<Button>().onClick.AddListener (FlipPagesRight);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/PreviousPage").GetComponent<Button>().onClick.AddListener (FlipPagesLeft);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/NextPage").GetComponent<Button>().onClick.AddListener (FlipPagesRight);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InfoSection/LeftPage/PreviousPage").GetComponent<Button>().onClick.AddListener (FlipPagesLeft);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InfoSection/RightPage/NextPage").GetComponent<Button>().onClick.AddListener (FlipPagesRight);
+		GameObject.Find ("Main Camera Screen/PauseMenu/SettingsSection/LeftPage/PreviousPage").GetComponent<Button>().onClick.AddListener (FlipPagesLeft);
+
+		currentpage = "Map";
 
 		MiniMap.gameObject.transform.position = new Vector3 (GameMenu.GetComponent<RectTransform> ().rect.width / 8f, GameMenu.GetComponent<RectTransform>().rect.height / 16f * 13f, 0f);
 		MiniMap.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameMenu.GetComponent<RectTransform> ().rect.width * 100 / 474, GameMenu.GetComponent<RectTransform> ().rect.height * 100 / 296);
@@ -85,6 +97,8 @@ public class pause_controller : MonoBehaviour {
 		GameObject.Find("Main Camera Screen/PauseMenu/SettingsSection/LeftPage").GetComponent<RectTransform> ().sizeDelta = new Vector2 (PauseMenu.GetComponent<RectTransform> ().rect.width / 512 * 175, PauseMenu.GetComponent<RectTransform> ().rect.height / 32 * 22);
 		GameObject.Find("Main Camera Screen/PauseMenu/SettingsSection/RightPage").gameObject.transform.position = new Vector3 (PauseMenu.GetComponent<RectTransform> ().rect.width / 512 * 351, GameMenu.GetComponent<RectTransform>().rect.height / 2f, 0f);
 		GameObject.Find("Main Camera Screen/PauseMenu/SettingsSection/RightPage").GetComponent<RectTransform> ().sizeDelta = new Vector2 (PauseMenu.GetComponent<RectTransform> ().rect.width / 512 * 175, PauseMenu.GetComponent<RectTransform> ().rect.height / 32 * 22);
+
+		GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4,GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
 		print (PauseMenu.GetComponent<RectTransform> ().rect.width);
 		print (PauseMenu.GetComponent<RectTransform> ().rect.height);
 
@@ -122,6 +136,7 @@ public class pause_controller : MonoBehaviour {
 				ClosePauseMenu ();
 			} else if (!GameIsPaused) {
 				OpenPauseMenu ();
+				DrawMap ();
 			}
 				
 		}
@@ -242,5 +257,119 @@ public class pause_controller : MonoBehaviour {
 			InvLogLerp = Time.time;
 		}
 
+	}
+
+	void FlipPagesRight () {
+		if (currentpage == "Map") {
+			currentpage = "Inventory";
+			InventorySection.SetActive (true);
+			MapSection.SetActive (false);
+		} else if (currentpage == "Inventory") {
+			currentpage = "Info";
+			InfoSection.SetActive (true);
+			InventorySection.SetActive (false);
+		} else if (currentpage == "Info") {
+			currentpage = "Settings";
+			SettingsSection.SetActive (true);
+			InfoSection.SetActive (false);
+		}
+	}
+
+	void FlipPagesLeft () {
+		if (currentpage == "Inventory") {
+			currentpage = "Map";
+			MapSection.SetActive (true);
+			InventorySection.SetActive (false);
+		} else if (currentpage == "Info") {
+			currentpage = "Inventory";
+			InventorySection.SetActive (true);
+			InfoSection.SetActive (false);
+		} else if (currentpage == "Settings") {
+			currentpage = "Info";
+			InfoSection.SetActive (true);
+			SettingsSection.SetActive (false);
+		}
+	}
+
+	void DrawMap () {
+		foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform) {
+			GameObject.Destroy (t.gameObject);
+		}
+
+		for (int i = 1; i <= Roomloader.GetComponent<room_loader>().roomlist.Count; i++) {
+			if (Roomloader.GetComponent<room_loader>().roomlist[i-1].visited) {
+				GameObject room = GameObject.Find ("room_" + i);
+				foreach (Transform t in room.transform) {
+					if (t.name == "Updoor") {
+						GameObject door = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+						door.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						door.transform.localPosition = new Vector3 (Roomloader.GetComponent<room_loader>().roomlist[i-1].x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, Roomloader.GetComponent<room_loader>().roomlist[i-1].y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10 + GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 20);
+						door.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25);
+						door.GetComponent<Image> ().color = Color.gray;
+						GameObject newroom = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+						newroom.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						newroom.transform.localPosition = new Vector3 (Roomloader.GetComponent<room_loader>().roomlist[i-1].x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, (Roomloader.GetComponent<room_loader>().roomlist[i-1].y + 1) * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+						newroom.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12);
+						newroom.GetComponent<Image> ().color = Color.black;
+					}
+					if (t.name == "Downdoor") {
+						GameObject door = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+						door.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						door.transform.localPosition = new Vector3 (Roomloader.GetComponent<room_loader>().roomlist[i-1].x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, Roomloader.GetComponent<room_loader>().roomlist[i-1].y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10 - GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 20);
+						door.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25);
+						door.GetComponent<Image> ().color = Color.gray;
+						GameObject newroom = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+						newroom.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						newroom.transform.localPosition = new Vector3 (Roomloader.GetComponent<room_loader>().roomlist[i-1].x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, (Roomloader.GetComponent<room_loader>().roomlist[i-1].y - 1) * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+						newroom.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12);
+						newroom.GetComponent<Image> ().color = Color.black;
+					}
+					if (t.name == "Leftdoor") {
+						GameObject door = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+						door.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						door.transform.localPosition = new Vector3 (Roomloader.GetComponent<room_loader>().roomlist[i-1].x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10 - GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 20, Roomloader.GetComponent<room_loader>().roomlist[i-1].y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+						door.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25);
+						door.GetComponent<Image> ().color = Color.gray;
+						GameObject newroom = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+						newroom.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						newroom.transform.localPosition = new Vector3 ((Roomloader.GetComponent<room_loader>().roomlist[i-1].x - 1) * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, Roomloader.GetComponent<room_loader>().roomlist[i-1].y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+						newroom.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12);
+						newroom.GetComponent<Image> ().color = Color.black;
+					}
+					if (t.name == "Rightdoor") {
+						GameObject door = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+						door.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						door.transform.localPosition = new Vector3 (Roomloader.GetComponent<room_loader>().roomlist[i-1].x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10 + GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 20, Roomloader.GetComponent<room_loader>().roomlist[i-1].y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+						door.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 25);
+						door.GetComponent<Image> ().color = Color.gray;
+						GameObject newroom = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+						newroom.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+						newroom.transform.localPosition = new Vector3 ((Roomloader.GetComponent<room_loader>().roomlist[i-1].x + 1) * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, Roomloader.GetComponent<room_loader>().roomlist[i-1].y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+						newroom.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12);
+						newroom.GetComponent<Image> ().color = Color.black;
+					}
+				}
+			}
+		}
+
+		foreach (RL.Room r in Roomloader.GetComponent<room_loader>().roomlist) {
+			
+			if (currentroom.level == r.level) {
+				if (currentroom.x == r.x && currentroom.y == r.y && currentroom.level == r.level) {
+					GameObject room = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+					room.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+					room.transform.localPosition = new Vector3 (r.x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, r.y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+					room.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12);
+					room.GetComponent<Image> ().color = Color.white;
+				}
+				else if (r.visited) {
+					GameObject room = Instantiate (Resources.Load ("Menu/Maptile"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+					room.transform.SetParent (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/MapPanel").transform);
+					room.transform.localPosition = new Vector3 (r.x * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, r.y * GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 10);
+					room.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12, GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 12);
+					room.GetComponent<Image> ().color = Color.gray;
+				}
+			}
+		}
 	}
 }
