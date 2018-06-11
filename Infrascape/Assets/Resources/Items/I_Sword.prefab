@@ -213,10 +213,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   item: {fileID: 1333619485070090}
   name: Sword
+  description: It's a standard medieval sword. Quite a common thing to find in dungeons,
+    but that doesn't mean it has no value.
   rarity: uncommon
   color: {r: 0, g: 0, b: 0, a: 0}
   icon: {fileID: 21300000, guid: 84334c2dc56df374c839c7b8f31d65e4, type: 3}
   weight: 3
-  kind: weapon
+  kind: Weapon
   damage: 8
   buffertime: 1.2

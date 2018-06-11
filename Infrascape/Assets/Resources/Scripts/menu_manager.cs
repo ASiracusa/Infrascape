@@ -113,9 +113,12 @@ public class menu_manager : MonoBehaviour {
 		int numfloors = int.Parse("" + newseed[2]) + int.Parse("" + newseed[3]);
 		int maxrooms = (int.Parse("" + newseed[4]) + 1 + int.Parse("" + newseed[5])) * (int.Parse("" + newseed[6]) + 1 + int.Parse("" + newseed[7]));
 
+		string[] ends = { "mmmmmccett", "mmmmccett", "mmmett", "mmmcet", "mmmccett" };
 		string[] nostairs = { "mmmmmcctt", "mmmmcctt", "mmmtt", "mmmct", "mmmcctt" };
 		string[] onestairs = { "mmmmmscctt", "mmmmscctt", "mmmstt", "mmmsct", "mmmscctt" };
 		string[] twostairs = { "mmmmmsscctt", "mmmmsscctt", "mmmsstt", "mmmssct", "mmmsscctt" };
+
+		bool endmade = false;
 
 		int i = 1;
 		while (i <= numfloors) {
@@ -128,9 +131,15 @@ public class menu_manager : MonoBehaviour {
 
 			} else if (i == numfloors || (uplist.Contains ("" + newseed [1]) && downlist.Contains ("" + newseed [1]) && i == int.Parse ("" + newseed [2]))) {
 				rn = Random.Range (0, nostairs.Length);
-				if (nostairs [rn].Length > maxrooms)
+				if (endmade && nostairs [rn].Length > maxrooms || !endmade && ends [rn].Length > maxrooms)
 					continue;
-				newseed += "" + nostairs [rn] + "_";
+				if (endmade) {
+					newseed += "" + nostairs [rn] + "_";
+				} else {
+					newseed += "" + ends [rn] + "_";
+					endmade = true;
+					print("this shouldn't be printed");
+				}
 				i++;
 			} else {
 				rn = Random.Range (0, onestairs.Length);

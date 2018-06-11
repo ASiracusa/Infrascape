@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine;
+using RL = room_loader;
 
 public class camera_movement : MonoBehaviour {
 
@@ -37,10 +39,36 @@ public class camera_movement : MonoBehaviour {
 
 	void OnTriggerEnter (Collider collision) {
 
-		if (collision.gameObject.name == "Cameratrigger") {
+		if (collision.gameObject.name == "Endtrigger") {
+			PlayerPrefs.SetString ("Cutscene", "true");
+			int visittotal = 0;
+			foreach (RL.Room r in Roomloader.GetComponent<room_loader>().roomlist) {
+				if (r.visited) {
+					visittotal += 1;
+				}
+			}
+			PlayerPrefs.SetInt ("VisitedRooms", visittotal + 1);
+			StartCoroutine (TransitionToWin ());
+		}
+
+		if (collision.gameObject.name == "Cameratrigger" && PlayerPrefs.GetString("Cutscene") == "false") {
 			StartCoroutine (FadeIntoRoom (collision));
 		}
 
+	}
+
+	void OnCollisionEnter (Collision collision) {
+		if (collision.gameObject.name == "floorhazard(Clone)") {
+			PlayerPrefs.SetString ("Cutscene", "true");
+			int visittotal = 0;
+			foreach (RL.Room r in Roomloader.GetComponent<room_loader>().roomlist) {
+				if (r.visited) {
+					visittotal += 1;
+				}
+			}
+			PlayerPrefs.SetInt ("VisitedRooms", visittotal + 1);
+			StartCoroutine (TransitionToDeath ());
+		}
 	}
 
 	IEnumerator FadeIntoRoom (Collider collision) {
@@ -66,5 +94,44 @@ public class camera_movement : MonoBehaviour {
 			
 		yield return null;
 
+	}
+
+	IEnumerator TransitionToWin () {
+		float t = 0;
+
+		while (t <= 0.1f) {
+			Blackscreen.color = new Color (0, 0, 0, t / 0.1f);
+			t += 0.01f;
+			yield return new WaitForSeconds (0.03f);
+		}
+		Blackscreen.color = new Color (0, 0, 0, 1);
+
+		SceneManager.LoadScene ("Winscreen");
+	}
+
+	IEnumerator TransitionToDeath () {
+		float t = 0;
+		Destroy (Player.GetComponent<Rigidbody> ());
+
+		while (t <= 0.2f) {
+			t += 0.01f;
+			Player.transform.position = new Vector3(Player.transform.position.x, Player.transform.position.y - 0.05f, Player.transform.position.z);
+			yield return new WaitForSeconds (0.03f);
+		}
+		t = 0;
+		foreach (Transform t1 in Player.transform) {
+			foreach (Transform t2 in t1) {
+				t2.GetComponent<MeshRenderer> ().enabled = false;
+			}
+		}
+		yield return new WaitForSeconds (0.4f);
+		while (t <= 0.1f) {
+			Blackscreen.color = new Color (0, 0, 0, t / 0.1f);
+			t += 0.01f;
+			yield return new WaitForSeconds (0.03f);
+		}
+		Blackscreen.color = new Color (0, 0, 0, 1);
+
+		SceneManager.LoadScene ("Deathscreen");
 	}
 }

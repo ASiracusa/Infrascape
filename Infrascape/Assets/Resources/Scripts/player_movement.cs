@@ -23,6 +23,7 @@ public class player_movement : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		PlayerPrefs.SetString ("Cutscene", "false");
 		player_rg = GetComponent<Rigidbody> ();
 		player_rg.freezeRotation = true;
 		current_angle = transform.eulerAngles;
@@ -32,45 +33,47 @@ public class player_movement : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-		if (Input.GetKey (UpKey) && !Input.GetKey (DownKey)) {
-			//player_rg.MovePosition (transform.position + transform.forward * Time.deltaTime * -speed);
-			Vector3 direction = Camera.transform.forward;
-			direction.y = 0;
-			transform.Translate (direction * Time.deltaTime * speed, Space.World);
-			//target_angle = new Vector3 (0f, 0f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (DownKey) && !Input.GetKey (UpKey)) {
-			//player_rg.MovePosition (transform.position + transform.forward * Time.deltaTime * speed);
-			Vector3 direction = -Camera.transform.forward;
-			direction.y = 0;
-			transform.Translate (direction * Time.deltaTime * speed, Space.World);
-			//target_angle = new Vector3 (0f, 180f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (LeftKey) && !Input.GetKey (RightKey)) {
-			//player_rg.MovePosition (transform.position + transform.right * Time.deltaTime * speed);
-			Vector3 direction = -Camera.transform.right;
-			direction.y = 0;
-			transform.Translate (direction * Time.deltaTime * speed, Space.World);
-			//target_angle = new Vector3 (0f, 270f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (RightKey) && !Input.GetKey (LeftKey)) {
-			//player_rg.MovePosition (transform.position + transform.right * Time.deltaTime * -speed);
-			Vector3 direction = Camera.transform.right;
-			direction.y = 0;
-			transform.Translate (direction * Time.deltaTime * speed, Space.World);
-			//target_angle = new Vector3 (0f, 90f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (UpKey) && Input.GetKey (LeftKey) && !Input.GetKey (DownKey) && !Input.GetKey (RightKey)) {
-			//target_angle = new Vector3 (0f, 315f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (UpKey) && Input.GetKey (RightKey) && !Input.GetKey (DownKey) && !Input.GetKey (LeftKey)) {
-			//target_angle = new Vector3 (0f, 45f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (DownKey) && Input.GetKey (LeftKey) && !Input.GetKey (UpKey) && !Input.GetKey (RightKey)) {
-			//target_angle = new Vector3 (0f, 225f+Camera.transform.rotation.eulerAngles.y, 0f);
-		}
-		if (Input.GetKey (DownKey) && Input.GetKey (RightKey) && !Input.GetKey (UpKey) && !Input.GetKey (LeftKey)) {
-			//target_angle = new Vector3 (0f, 135+Camera.transform.rotation.eulerAngles.y, 0f);
+		if (PlayerPrefs.GetString ("Cutscene") == "false") {
+			if (Input.GetKey (UpKey) && !Input.GetKey (DownKey)) {
+				//player_rg.MovePosition (transform.position + transform.forward * Time.deltaTime * -speed);
+				Vector3 direction = Camera.transform.forward;
+				direction.y = 0;
+				transform.Translate (direction * Time.deltaTime * speed, Space.World);
+				//target_angle = new Vector3 (0f, 0f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (DownKey) && !Input.GetKey (UpKey)) {
+				//player_rg.MovePosition (transform.position + transform.forward * Time.deltaTime * speed);
+				Vector3 direction = -Camera.transform.forward;
+				direction.y = 0;
+				transform.Translate (direction * Time.deltaTime * speed, Space.World);
+				//target_angle = new Vector3 (0f, 180f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (LeftKey) && !Input.GetKey (RightKey)) {
+				//player_rg.MovePosition (transform.position + transform.right * Time.deltaTime * speed);
+				Vector3 direction = -Camera.transform.right;
+				direction.y = 0;
+				transform.Translate (direction * Time.deltaTime * speed, Space.World);
+				//target_angle = new Vector3 (0f, 270f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (RightKey) && !Input.GetKey (LeftKey)) {
+				//player_rg.MovePosition (transform.position + transform.right * Time.deltaTime * -speed);
+				Vector3 direction = Camera.transform.right;
+				direction.y = 0;
+				transform.Translate (direction * Time.deltaTime * speed, Space.World);
+				//target_angle = new Vector3 (0f, 90f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (UpKey) && Input.GetKey (LeftKey) && !Input.GetKey (DownKey) && !Input.GetKey (RightKey)) {
+				//target_angle = new Vector3 (0f, 315f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (UpKey) && Input.GetKey (RightKey) && !Input.GetKey (DownKey) && !Input.GetKey (LeftKey)) {
+				//target_angle = new Vector3 (0f, 45f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (DownKey) && Input.GetKey (LeftKey) && !Input.GetKey (UpKey) && !Input.GetKey (RightKey)) {
+				//target_angle = new Vector3 (0f, 225f+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
+			if (Input.GetKey (DownKey) && Input.GetKey (RightKey) && !Input.GetKey (UpKey) && !Input.GetKey (LeftKey)) {
+				//target_angle = new Vector3 (0f, 135+Camera.transform.rotation.eulerAngles.y, 0f);
+			}
 		}
 
 		//current_angle = new Vector3(Mathf.LerpAngle(current_angle.x, target_angle.x, Time.deltaTime * turn_speed), Mathf.LerpAngle(current_angle.y, target_angle.y, Time.deltaTime * turn_speed), Mathf.LerpAngle(current_angle.z, target_angle.z, Time.deltaTime * turn_speed));

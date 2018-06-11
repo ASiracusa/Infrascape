@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Linq;
 using RL = room_loader;
 using INV = inventory;
@@ -46,6 +47,8 @@ public class pause_controller : MonoBehaviour {
 	public int currentmapfloor;
 
 	void Start () {
+
+		PlayerPrefs.SetInt ("VisitedRooms", 0);
 
 		MiniMapOpen = "opened";
 		ItemLogOpen = "opened";
@@ -112,14 +115,31 @@ public class pause_controller : MonoBehaviour {
 		GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/LeftPage/DownLevelButton").gameObject.transform.localPosition = new Vector3 (GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / 5, GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage").GetComponent<RectTransform> ().rect.width / -15 * 7, 0);
 
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
-		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 175 * -5, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.height / 225 * -20, 0);
-		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/Scrollbar").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
-		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/Scrollbar").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 20 * 8, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.height / 225 * -20, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / -64 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.height / 225 * -20, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * Player.GetComponent<inventory> ().playerinventory.Count);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform.localPosition = new Vector3 (0, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.height / 225 * -20, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/Scrollbar").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 10, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.height);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/Scrollbar").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width / 16 * 7, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().transform.localPosition.y, 0);
 
-		GameObject.Find ("Main Camera Screen/GameMenu/HealthBar").gameObject.transform.position = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / -10 * 9);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/NameText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/NameText").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -20 * 9, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * 50, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/KindText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/KindText").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -20 * 9, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * 20, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -20 * 9, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * 0, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/ValueAndWeightText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 4);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/ValueAndWeightText").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -20 * 9, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * -20, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 5 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -16 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * -70, 0);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3);
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 64 * 19, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * -70, 0);
+
+		GameObject.Find ("Main Camera Screen/GameMenu/HealthBar").gameObject.transform.localPosition = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / -10 * 4);
+		GameObject.Find ("Main Camera Screen/GameMenu/DungeonClock").gameObject.transform.localPosition = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / 20 * 9);
 		print (PauseMenu.GetComponent<RectTransform> ().rect.width);
 		print (PauseMenu.GetComponent<RectTransform> ().rect.height);
 
+		StartCoroutine (DungeonClock());
 		PauseMenu.SetActive (false);
 
 	}
@@ -150,7 +170,7 @@ public class pause_controller : MonoBehaviour {
 //
 //		}
 
-		if (Input.GetKeyDown (PauseButton)) {
+		if (Input.GetKeyDown (PauseButton) && PlayerPrefs.GetString ("Cutscene") == "false") {
 
 			if (GameIsPaused) {
 				ClosePauseMenu ();
@@ -220,6 +240,7 @@ public class pause_controller : MonoBehaviour {
 	}
 
 	void ClosePauseMenu () {
+		ResetDetails ();
 		PauseMenu.SetActive (false);
 		GameMenu.SetActive (true);
 		Time.timeScale = 1;
@@ -424,24 +445,110 @@ public class pause_controller : MonoBehaviour {
 
 	void DisplayInventory () {
 
+		print ("displayedd");
+
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width / 5 * Player.GetComponent<inventory> ().playerinventory.Count);
+
 		List<INV.Item> inventory = Player.GetComponent<inventory> ().playerinventory;
 		List<GameObject> itempanels = new List<GameObject> ();
 
 		for (int i = 0; i < inventory.Count; i++) {
+			bool exists = false;
 			INV.Item curritem = inventory [i];
+			foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform) {
+				if (t.name == "Item (" + inventory[i].name + ")") {
+					t.gameObject.transform.GetChild (1).GetComponent<Text> ().text = (int.Parse(t.gameObject.transform.GetChild (1).GetComponent<Text> ().text.Substring (0, t.gameObject.transform.GetChild (1).GetComponent<Text> ().text.Length - 4)) + 1) + "x   ";
+					exists = true;
+					break;
+				}
+			}
+			print ("displayeddd");
+			if (exists)
+				continue;
+			print ("displayedddd");
 			GameObject go = Instantiate (Resources.Load("Menu/ItemContainer"), GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform) as GameObject;
-			go.transform.parent = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform;
-			go.transform.localPosition = new Vector3(0, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform>().rect.height / 5 * 2 - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform>().rect.height / 5 * i), 0);
+			//go.transform.parent = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform;
+			print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().rect.height);
+			go.transform.localPosition = new Vector3(0, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform>().rect.height / 2 - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 10) - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 5 * i), 0);
 			go.GetComponent<RectTransform>().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.height / 5);
 			go.gameObject.name = "Item (" + curritem.name + ")";
 			go.transform.GetChild (0).GetComponent<Text> ().text = "  " + curritem.name;
 			go.transform.GetChild (1).GetComponent<Text> ().text = "1x   ";
 			print (curritem.kind);
-			if (curritem.kind == "weapon") {
+			if (curritem.kind == "Weapon") {
 				go.GetComponent<Image> ().color = new Color32(193, 79, 79, 255);
 			}
+			if (curritem.kind == "Key") {
+				go.GetComponent<Image> ().color = new Color32(196, 133, 31, 255);
+			}
+			go.GetComponent<Button>().onClick.AddListener(delegate { DisplayItemDetails(curritem); });
 
 		}
 
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width / 5 * GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.childCount);
+		for (int i = 0; i < GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.childCount; i++) {
+			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.GetChild(i).transform.localPosition = new Vector3(0, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform>().rect.height / 2 - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 10) - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 5 * i), 0);
+		}
+
 	}
+
+	public void DisplayItemDetails (INV.Item i) {
+
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/NameText").GetComponent<Text> ().text = i.name;
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/KindText").GetComponent<Text> ().text = "Kind: " + i.kind;
+		if (i.kind == "Weapon") {
+			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Damage: " + i.damage;
+		}
+		if (i.kind == "Key") {
+			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Unlocks: Exit";
+		}
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/ValueAndWeightText").GetComponent<Text> ().text = "Weight: " + i.weight + " lbs";
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox/Text").GetComponent<Text> ().text = i.description;
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").GetComponent<Image> ().sprite = i.icon;
+
+	}
+
+	public void ResetDetails () {
+		foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform) {
+			GameObject.Destroy (t.gameObject);
+		}
+
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/NameText").GetComponent<Text> ().text = "Click an Item!";
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/KindText").GetComponent<Text> ().text = "";
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "";
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/ValueAndWeightText").GetComponent<Text> ().text = "";
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox/Text").GetComponent<Text> ().text = "";
+		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").GetComponent<Image> ().sprite = (Resources.Load("Menu/Maptile") as GameObject).GetComponent<Image>().sprite;
+	}
+
+	IEnumerator DungeonClock () {
+
+		Text clock = GameObject.Find ("Main Camera Screen/GameMenu/DungeonClock").GetComponent<Text>();
+		int timespent = 0;
+		yield return new WaitForSeconds (1);
+
+		while (true) {
+			timespent += 1;
+			if (timespent % 60 == 0) {
+				clock.text = "" + (timespent / 60) + ":00";
+			} else if (timespent % 60 <= 9) {
+				clock.text = "" + (timespent / 60) + ":0" + (timespent % 60);
+			} else {
+				clock.text = "" + (timespent / 60) + ":" + (timespent % 60);
+			}
+			PlayerPrefs.SetString ("TimeSpent", clock.text);
+			yield return new WaitForSeconds (1);
+		}
+
+	}
+
+
+
+//	void OnTriggerEnter (Collider collision) {
+//
+//		if (collision.gameObject.name == "Cameratrigger") {
+//			StartCoroutine (FadeIntoRoom (collision));
+//		}
+//
+//	}
 }

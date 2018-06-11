@@ -1,24 +1,30 @@
 fileFormatVersion: 2
-guid: 81526ef0d558bbb44a1fe68e78fab1f7
-timeCreated: 1518308695
+guid: 71dec6c159b3c63469e8aced09dc221c
+timeCreated: 1528506138
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: group_0_0
-    100002: group_0_7596088
-    100004: //RootNode
-    400000: group_0_0
-    400002: group_0_7596088
-    400004: //RootNode
-    2100000: group_0_0Mat
-    2100002: group_0_7596088Mat
-    2300000: group_0_0
-    2300002: group_0_7596088
-    3300000: group_0_0
-    3300002: group_0_7596088
-    4300000: group_0_0
-    4300002: group_0_7596088
+    100000: group_0_10988977
+    100002: group_0_15277357
+    100004: group_0_6383466
+    100006: //RootNode
+    400000: group_0_10988977
+    400002: group_0_15277357
+    400004: group_0_6383466
+    400006: //RootNode
+    2100000: group_0_10988977Mat
+    2100002: group_0_15277357Mat
+    2100004: group_0_6383466Mat
+    2300000: group_0_10988977
+    2300002: group_0_15277357
+    2300004: group_0_6383466
+    3300000: group_0_10988977
+    3300002: group_0_15277357
+    3300004: group_0_6383466
+    4300000: group_0_10988977
+    4300002: group_0_15277357
+    4300004: group_0_6383466
   externalObjects: {}
   materials:
     importMaterials: 1

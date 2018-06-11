@@ -33,6 +33,7 @@ public class room_loader : MonoBehaviour {
 	private List<GameObject> connectorlist;
 	private List<GameObject> stairroomlist;
 	private List<GameObject> treasureroomlist;
+	private List<GameObject> endroomlist;
 	string recentdirection;
 
 	public List<Room> roomlist = new List<Room>();
@@ -45,6 +46,7 @@ public class room_loader : MonoBehaviour {
 	private GameObject leftwallasset;
 	private GameObject middlewallasset;
 	private GameObject rightwallasset;
+	private GameObject enddoorasset;
 
 	private string stairname;
 
@@ -134,11 +136,16 @@ public class room_loader : MonoBehaviour {
 		roomloadlist = roomloadarray.ToList ();
 		treasureroomlist = roomloadlist;
 
+		roomloadarray = Resources.LoadAll<GameObject> (RoomRootFile + "/endrooms");
+		roomloadlist = roomloadarray.ToList ();
+		endroomlist = roomloadlist;
+
 		doorasset = Resources.Load<GameObject>(RoomRootFile + "/door");
 		fullwallasset = Resources.Load<GameObject>(RoomRootFile + "/fullwall");
 		leftwallasset = Resources.Load<GameObject>(RoomRootFile + "/leftwall");
 		middlewallasset = Resources.Load<GameObject>(RoomRootFile + "/middlewall");
 		rightwallasset = Resources.Load<GameObject>(RoomRootFile + "/rightwall");
+		enddoorasset = Resources.Load<GameObject>(RoomRootFile + "/enddoor");
 
 		minwidth *= -1;
 		minheight *= -1;
@@ -184,6 +191,9 @@ public class room_loader : MonoBehaviour {
 			MakeRooms (currentlevel, DungeonVal1 [currentlevel], "down");
 		}
 		MakeDoors ();
+		MakeFloorHazard ();
+
+		PlayerPrefs.SetInt ("NumOfRooms", roomlist.Count);
 
 	}
 
@@ -274,6 +284,7 @@ public class room_loader : MonoBehaviour {
 
 		self.GetComponent<dungeon_names> ().GenerateNames (seednumber);
 		dungeonname = self.GetComponent<dungeon_names> ().dungeonname;
+		PlayerPrefs.SetString ("DungeonName", dungeonname);
 		print (dungeonname);
 
 	}
@@ -308,6 +319,10 @@ public class room_loader : MonoBehaviour {
 			if (roomkey[t] == 's') {
 				roomchoices = stairroomlist;
 				roomtype = "stairs";
+			}
+			if (roomkey [t] == 'e') {
+				roomchoices = endroomlist;
+				roomtype = "endrooms";
 			}
 			if (roomkey[t] == 't') {
 				roomchoices = treasureroomlist;
@@ -685,6 +700,35 @@ public class room_loader : MonoBehaviour {
 						CreateWall (90, "Rightwall (Middle)", middlewallasset, curdoor.firstroom.gameObject, new Vector3(door.transform.parent.position.x - 10, door.transform.parent.position.y, door.transform.parent.position.z));
 					}
 				}
+			}
+
+			if (curdoor.firstroom.GetComponent<room_data> ().end && hasdoor) {
+
+				foreach (Transform t in curdoor.firstroom.transform) {
+					if (t.name == "Updoor") {
+						GameObject enddoor = Instantiate(enddoorasset, new Vector3 (curdoor.secondroom.transform.position.x, curdoor.secondroom.transform.position.y + 1.5f, curdoor.secondroom.transform.position.z + 9), Quaternion.identity);
+						enddoor.transform.parent = curdoor.secondroom.transform;
+						//enddoor.transform.localPosition = new Vector3 (9, 1.5f, 0);
+					}
+					if (t.name == "Downdoor") {
+						GameObject enddoor = Instantiate(enddoorasset, new Vector3 (curdoor.secondroom.transform.position.x, curdoor.secondroom.transform.position.y + 1.5f, curdoor.secondroom.transform.position.z - 9), Quaternion.identity);
+						enddoor.transform.parent = curdoor.secondroom.transform;
+						//enddoor.transform.localPosition = new Vector3 (0, 1.5f, -9);
+					}
+					if (t.name == "Leftdoor") {
+						GameObject enddoor = Instantiate(enddoorasset, new Vector3 (curdoor.secondroom.transform.position.x - 9, curdoor.secondroom.transform.position.y + 1.5f, curdoor.secondroom.transform.position.z), Quaternion.identity);
+						enddoor.transform.eulerAngles = new Vector3 (0, 90, 0);
+						enddoor.transform.parent = curdoor.secondroom.transform;
+						//enddoor.transform.localPosition = new Vector3 (-9, 1.5f, 0);
+					}
+					if (t.name == "Rightdoor") {
+						GameObject enddoor = Instantiate(enddoorasset, new Vector3 (curdoor.secondroom.transform.position.x + 9, curdoor.secondroom.transform.position.y + 1.5f, curdoor.secondroom.transform.position.z), Quaternion.identity);
+						enddoor.transform.eulerAngles = new Vector3 (0, 90, 0);
+						enddoor.transform.parent = curdoor.secondroom.transform;
+						//enddoor.transform.localPosition = new Vector3 (-9, 1.5f, 0);
+					}
+				}
+
 			}
 
 			hasdoor = false;
@@ -1287,6 +1331,24 @@ public class room_loader : MonoBehaviour {
 			temproom.GetComponent<room_data> ().e_r = tempsr;
 			temprot -= 90;
 
+		}
+
+	}
+
+	void MakeFloorHazard() {
+
+		foreach (Room r1 in roomlist) {
+			bool under = false;
+			foreach (Room r2 in roomlist) {
+				if (r1.x == r2.x && r1.y == r2.y && r1.level == r2.level + 1) {
+					under = true;
+				}
+			}
+			if (!under) {
+				GameObject h = Instantiate (Resources.Load<GameObject> (RoomRootFile + "/floorhazard"), new Vector3 (0, 0, 0), Quaternion.identity);
+				h.transform.parent = GameObject.Find("room_" + (roomlist.IndexOf(r1) + 1)).transform;
+				h.transform.position = new Vector3 (h.transform.parent.transform.position.x, h.transform.parent.transform.position.y - 0, h.transform.parent.transform.position.z);
+			}
 		}
 
 	}

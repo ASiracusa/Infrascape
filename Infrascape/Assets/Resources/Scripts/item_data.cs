@@ -7,6 +7,7 @@ public class item_data : MonoBehaviour {
 
 	public GameObject item;
 	public string name;
+	public string description;
 	public string rarity;
 	public Color color;
 	public Sprite icon;

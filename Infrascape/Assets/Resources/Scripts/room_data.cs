@@ -17,6 +17,7 @@ public class room_data : MonoBehaviour {
 	public bool e_m;
 	public bool e_r;
 	public string half;
+	public bool end;
 
 	// Use this for initialization
 	void Start () {
