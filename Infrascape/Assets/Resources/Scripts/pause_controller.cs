@@ -34,6 +34,8 @@ public class pause_controller : MonoBehaviour {
 	private float CurrItemLerp;
 	private float InvLogLerp;
 
+	private GameObject EquipButton;
+
 	public RawImage Leatherbacking;
 	public GameObject MapSection;
 	public GameObject InventorySection;
@@ -87,6 +89,8 @@ public class pause_controller : MonoBehaviour {
 		ItemLogHider.GetComponent<RectTransform> ().sizeDelta = new Vector2 (ItemLog.GetComponent<RectTransform> ().rect.width, ItemLog.GetComponent<RectTransform> ().rect.height);
 		InvLogHider.GetComponent<RectTransform> ().sizeDelta = new Vector2 (MiniMap.GetComponent<RectTransform> ().rect.width, InvLog.GetComponent<RectTransform> ().rect.height);
 
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (ItemLog.GetComponent<RectTransform> ().sizeDelta.x / 10 * 9, ItemLog.GetComponent<RectTransform> ().sizeDelta.y / 10 * 9);
+
 		Leatherbacking.gameObject.transform.position = new Vector3 (PauseMenu.GetComponent<RectTransform> ().rect.width / 2f, GameMenu.GetComponent<RectTransform>().rect.height / 2f, 0f);
 		Leatherbacking.GetComponent<RectTransform> ().sizeDelta = new Vector2 (PauseMenu.GetComponent<RectTransform> ().rect.width / 522 * 400, PauseMenu.GetComponent<RectTransform> ().rect.height / 326 * 250);
 		GameObject.Find("Main Camera Screen/PauseMenu/MapSection/LeftPage").gameObject.transform.position = new Vector3 (PauseMenu.GetComponent<RectTransform> ().rect.width / 512 * 161, GameMenu.GetComponent<RectTransform>().rect.height / 2f, 0f);
@@ -133,6 +137,11 @@ public class pause_controller : MonoBehaviour {
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -16 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * -70, 0);
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3);
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 64 * 19, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * -70, 0);
+
+		EquipButton = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EquipButton") as GameObject;
+		EquipButton.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8);
+		EquipButton.gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -64 * 15, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * 80, 0);
+		EquipButton.SetActive (false);
 
 		GameObject.Find ("Main Camera Screen/GameMenu/HealthBar").gameObject.transform.localPosition = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / -10 * 4);
 		GameObject.Find ("Main Camera Screen/GameMenu/DungeonClock").gameObject.transform.localPosition = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / 20 * 9);
@@ -498,9 +507,13 @@ public class pause_controller : MonoBehaviour {
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/KindText").GetComponent<Text> ().text = "Kind: " + i.kind;
 		if (i.kind == "Weapon") {
 			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Damage: " + i.damage;
+			EquipButton.SetActive (true);
+			EquipButton.GetComponent<Button> ().onClick.RemoveAllListeners ();
+			EquipButton.GetComponent<Button>().onClick.AddListener(delegate {Player.GetComponent<inventory>().SetCurrentItem(i);});
 		}
 		if (i.kind == "Key") {
 			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Unlocks: Exit";
+			EquipButton.SetActive (false);
 		}
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/ValueAndWeightText").GetComponent<Text> ().text = "Weight: " + i.weight + " lbs";
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox/Text").GetComponent<Text> ().text = i.description;

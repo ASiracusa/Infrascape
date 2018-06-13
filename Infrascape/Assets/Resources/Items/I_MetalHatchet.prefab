@@ -265,9 +265,10 @@ Animation:
   m_GameObject: {fileID: 1506408631854348}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 7ec6ba94fae9bc74581a01d574b96cd0, type: 2}
+  m_Animation: {fileID: 7400000, guid: 506a8cf448533c242ac0c0c0754100eb, type: 2}
   m_Animations:
-  - {fileID: 7400000, guid: 7ec6ba94fae9bc74581a01d574b96cd0, type: 2}
+  - {fileID: 7400000, guid: 506a8cf448533c242ac0c0c0754100eb, type: 2}
+  - {fileID: 7400000, guid: 620d77562ecee2344bb58cbeb1c4d32f, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
@@ -293,4 +294,4 @@ MonoBehaviour:
   weight: 3
   kind: Weapon
   damage: 16
-  buffertime: 1
+  speed: 1

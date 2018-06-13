@@ -82,14 +82,14 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1333619485070090}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4727788339877370}
   - {fileID: 4636448889023760}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0.8099365, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 1.9103394, z: 0}
 --- !u!4 &4727788339877370
 Transform:
   m_ObjectHideFlags: 1
@@ -193,8 +193,9 @@ Animation:
   m_GameObject: {fileID: 1333619485070090}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 7ec6ba94fae9bc74581a01d574b96cd0, type: 2}
+  m_Animation: {fileID: 7400000, guid: 506a8cf448533c242ac0c0c0754100eb, type: 2}
   m_Animations:
+  - {fileID: 7400000, guid: 506a8cf448533c242ac0c0c0754100eb, type: 2}
   - {fileID: 7400000, guid: 7ec6ba94fae9bc74581a01d574b96cd0, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
@@ -221,4 +222,4 @@ MonoBehaviour:
   weight: 3
   kind: Weapon
   damage: 8
-  buffertime: 1.2
+  speed: 1

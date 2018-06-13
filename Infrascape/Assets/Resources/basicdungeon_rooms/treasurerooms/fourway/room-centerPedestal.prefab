@@ -11,6 +11,21 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1725742186781978}
   m_IsPrefabParent: 1
+--- !u!1 &1018642070059746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4223904345927424}
+  m_Layer: 0
+  m_Name: Treasurespot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1084366154856308
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,6 +326,19 @@ Transform:
   m_Father: {fileID: 4380619750508156}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4223904345927424
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1018642070059746}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4380619750508156}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4301001688703842
 Transform:
   m_ObjectHideFlags: 1
@@ -360,6 +388,7 @@ Transform:
   - {fileID: 4558056625475658}
   - {fileID: 4449083035917906}
   - {fileID: 4795321072360470}
+  - {fileID: 4223904345927424}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1325,3 +1354,5 @@ MonoBehaviour:
   e_l: 0
   e_m: 0
   e_r: 0
+  half: 
+  end: 0

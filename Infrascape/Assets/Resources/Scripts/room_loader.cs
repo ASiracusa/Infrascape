@@ -1,12 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine;
 using System.Linq;
+using INV = inventory;
 
 public class room_loader : MonoBehaviour {
 
 	/* ////////// VARIABLES  ////////// */
+
+	private GameObject Player;
 
 	[Header("Dungeon Setup")]
 	public GameObject self;
@@ -47,8 +51,11 @@ public class room_loader : MonoBehaviour {
 	private GameObject middlewallasset;
 	private GameObject rightwallasset;
 	private GameObject enddoorasset;
+	private GameObject chestasset;
 
 	private string stairname;
+
+	private List<GameObject> chestlist = new List<GameObject> ();
 
 	/* ////////// ROOM OBJECTS ////////// */
 
@@ -118,7 +125,10 @@ public class room_loader : MonoBehaviour {
 
 	void Start () {
 
+		Player = GameObject.Find ("Player");
+
 		DungeonSeed = PlayerPrefs.GetString ("DungeonSeed");
+		PlayerPrefs.SetInt ("Gold", 0);
 		
 		roomloadarray = Resources.LoadAll<GameObject> (RoomRootFile + "/mainrooms");
 		roomloadlist = roomloadarray.ToList ();
@@ -146,6 +156,7 @@ public class room_loader : MonoBehaviour {
 		middlewallasset = Resources.Load<GameObject>(RoomRootFile + "/middlewall");
 		rightwallasset = Resources.Load<GameObject>(RoomRootFile + "/rightwall");
 		enddoorasset = Resources.Load<GameObject>(RoomRootFile + "/enddoor");
+		chestasset = Resources.Load<GameObject>(RoomRootFile + "/closedchest");
 
 		minwidth *= -1;
 		minheight *= -1;
@@ -192,6 +203,7 @@ public class room_loader : MonoBehaviour {
 		}
 		MakeDoors ();
 		MakeFloorHazard ();
+		MakeChests ();
 
 		PlayerPrefs.SetInt ("NumOfRooms", roomlist.Count);
 
@@ -201,20 +213,15 @@ public class room_loader : MonoBehaviour {
 
 		if (DungeonSeed [0] == 'B')
 			RoomRootFile = "basicdungeon_rooms";
-			print("b");
 		
 		if (DungeonSeed [1] == 'B')
 			DungeonType = "basic";
-			print("b");
 		if (DungeonSeed [1] == 'C')
 			DungeonType = "climb";
-			print("c");
 		if (DungeonSeed [1] == 'D')
 			DungeonType = "delve";
-			print("d");
 		if (DungeonSeed [1] == 'M')
 			DungeonType = "mono";
-			print("m");
 
 		string midway = "";
 
@@ -253,10 +260,8 @@ public class room_loader : MonoBehaviour {
 
 			if (DungeonSeed [i] != '_' && !seedflip) {
 				if (looplevel >= 0) {
-					print (looplevel);
 					DungeonVal1 [looplevel] = DungeonVal1 [looplevel] + DungeonSeed [i];
 				} else {
-					print (looplevel);
 					if (looplevel != downnum * -1 - 1) {
 						DungeonVal2 [looplevel * -1 - 1] = DungeonVal2 [looplevel * -1 - 1] + DungeonSeed [i];
 					} else {
@@ -280,12 +285,13 @@ public class room_loader : MonoBehaviour {
 
 		seednumber = int.Parse (seedstring);
 		seednumber += PlayerPrefs.GetInt ("CrashMod");
-		print (seednumber);
 
 		self.GetComponent<dungeon_names> ().GenerateNames (seednumber);
 		dungeonname = self.GetComponent<dungeon_names> ().dungeonname;
 		PlayerPrefs.SetString ("DungeonName", dungeonname);
 		print (dungeonname);
+
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<Text> ().text = "You entered the " + dungeonname;
 
 	}
 		
@@ -1349,6 +1355,44 @@ public class room_loader : MonoBehaviour {
 				h.transform.parent = GameObject.Find("room_" + (roomlist.IndexOf(r1) + 1)).transform;
 				h.transform.position = new Vector3 (h.transform.parent.transform.position.x, h.transform.parent.transform.position.y - 0, h.transform.parent.transform.position.z);
 			}
+		}
+
+	}
+
+	void MakeChests () {
+
+		for (int i = 1; i <= roomlist.Count; i++) {
+
+			GameObject r = GameObject.Find ("room_" + i);
+
+			foreach (Transform t in r.transform) {
+				if (t.gameObject.name == "Treasurespot") {
+					GameObject c = Instantiate (chestasset, t.position, t.localRotation);
+					c.transform.rotation = t.rotation;
+					c.transform.parent = r.transform;
+					chestlist.Add (c);
+				}
+			}
+
+		}
+
+		int ind = Random.Range(0, chestlist.Count - 1);
+		print (ind + " " + chestlist.Count);
+		print (chestlist [ind].name);
+		chestlist [ind].GetComponent<chest_items> ().storage.Add (Player.GetComponent<inventory>().findItem ("Dungeon Key"));
+
+		foreach (GameObject g in chestlist) {
+
+			while (true) {
+				int rand = Random.Range (0, Player.GetComponent<inventory>().catalog.Count);
+				print(rand + " " + Player.GetComponent<inventory>().catalog.Count);
+				if (Player.GetComponent<inventory>().catalog [rand].name != "Dungeon Key") {
+					g.GetComponent<chest_items> ().storage.Add (Player.GetComponent<inventory>().catalog [rand]);
+					g.GetComponent<chest_items> ().gold = Random.Range (20, 101);
+					break;
+				}
+			}
+
 		}
 
 	}

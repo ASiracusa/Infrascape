@@ -14,7 +14,7 @@ public class item_data : MonoBehaviour {
 	public float weight;
 	public string kind;
 	public int damage;
-	public float buffertime;
+	public float speed;
 
 	// Use this for initialization
 	void Start () {
