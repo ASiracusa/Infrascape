@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4110613542781636}
   - component: {fileID: 33151247344473124}
   - component: {fileID: 23736296471304728}
+  - component: {fileID: 64526417677542474}
   m_Layer: 0
   m_Name: group_0_15277357
   m_TagString: Untagged
@@ -257,6 +258,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1353027666872232}
   m_Mesh: {fileID: 4300004, guid: 71dec6c159b3c63469e8aced09dc221c, type: 3}
+--- !u!64 &64526417677542474
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1194817075716212}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300002, guid: 71dec6c159b3c63469e8aced09dc221c, type: 3}
 --- !u!111 &111502344573412932
 Animation:
   m_ObjectHideFlags: 1
@@ -290,8 +305,10 @@ MonoBehaviour:
     range, it's quite quick and powerful, considering its rarity.
   rarity: uncommon
   color: {r: 0, g: 0, b: 0, a: 0}
-  icon: {fileID: 21300000, guid: 84334c2dc56df374c839c7b8f31d65e4, type: 3}
+  icon: {fileID: 21300000, guid: 7b71154e8c447014d830a1e3bc341f91, type: 3}
   weight: 3
   kind: Weapon
   damage: 16
   speed: 1
+  effecttype: 
+  effectpotency: 0

@@ -15,6 +15,8 @@ public class item_data : MonoBehaviour {
 	public string kind;
 	public int damage;
 	public float speed;
+	public string effecttype;
+	public float effectpotency;
 
 	// Use this for initialization
 	void Start () {

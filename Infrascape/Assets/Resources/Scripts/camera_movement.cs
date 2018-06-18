@@ -17,10 +17,12 @@ public class camera_movement : MonoBehaviour {
 	public Image Blackscreen;
 
 	private GameObject enteredroom;
+	private bool fading;
 
 	// Use this for initialization
 	void Start () {
 		Blackscreen.color = new Color(0, 0, 0, 1);
+		fading = false;
 	}
 	
 	// Update is called once per frame
@@ -39,6 +41,8 @@ public class camera_movement : MonoBehaviour {
 
 	void OnTriggerEnter (Collider collision) {
 
+		print ("enter");
+
 		if (collision.gameObject.name == "Endtrigger") {
 			PlayerPrefs.SetString ("Cutscene", "true");
 			int visittotal = 0;
@@ -51,7 +55,8 @@ public class camera_movement : MonoBehaviour {
 			StartCoroutine (TransitionToWin ());
 		}
 
-		if (collision.gameObject.name == "Cameratrigger" && PlayerPrefs.GetString("Cutscene") == "false") {
+		if (collision.gameObject.name == "Cameratrigger" && PlayerPrefs.GetString("Cutscene") == "false" && !fading) {
+			fading = true;
 			StartCoroutine (FadeIntoRoom (collision));
 		}
 
@@ -92,6 +97,8 @@ public class camera_movement : MonoBehaviour {
 			yield return new WaitForSeconds (0.03f);
 		}
 			
+		fading = false;
+
 		yield return null;
 
 	}
@@ -121,7 +128,14 @@ public class camera_movement : MonoBehaviour {
 		t = 0;
 		foreach (Transform t1 in Player.transform) {
 			foreach (Transform t2 in t1) {
-				t2.GetComponent<MeshRenderer> ().enabled = false;
+				if (t2.GetComponent<MeshRenderer> ()) {
+					t2.GetComponent<MeshRenderer> ().enabled = false;
+				}
+				foreach (Transform t3 in t2) {
+					if (t3.GetComponent<MeshRenderer> ()) {
+						t3.GetComponent<MeshRenderer> ().enabled = false;
+					}
+				}
 			}
 		}
 		yield return new WaitForSeconds (0.4f);
@@ -133,5 +147,31 @@ public class camera_movement : MonoBehaviour {
 		Blackscreen.color = new Color (0, 0, 0, 1);
 
 		SceneManager.LoadScene ("Deathscreen");
+	}
+
+	public IEnumerator DeathByEnemy () {
+
+		PlayerPrefs.SetString ("Cutscene", "true");
+		int visittotal = 0;
+		foreach (RL.Room r in Roomloader.GetComponent<room_loader>().roomlist) {
+			if (r.visited) {
+				visittotal += 1;
+			}
+		}
+		PlayerPrefs.SetInt ("VisitedRooms", visittotal + 1);
+
+		float t = 0;
+
+		while (t <= 0.1f) {
+			Blackscreen.color = new Color (0, 0, 0, t / 0.1f);
+			t += 0.01f;
+			yield return new WaitForSeconds (0.03f);
+		}
+		Blackscreen.color = new Color (0, 0, 0, 1);
+
+		SceneManager.LoadScene ("Deathscreen");
+
+		yield return null;
+
 	}
 }

@@ -129,6 +129,8 @@ public class room_loader : MonoBehaviour {
 
 		DungeonSeed = PlayerPrefs.GetString ("DungeonSeed");
 		PlayerPrefs.SetInt ("Gold", 0);
+		PlayerPrefs.SetInt ("NumOfChests", 0);
+		PlayerPrefs.SetInt ("OpenedChests", 0);
 		
 		roomloadarray = Resources.LoadAll<GameObject> (RoomRootFile + "/mainrooms");
 		roomloadlist = roomloadarray.ToList ();
@@ -204,6 +206,7 @@ public class room_loader : MonoBehaviour {
 		MakeDoors ();
 		MakeFloorHazard ();
 		MakeChests ();
+		SpawnEnemies ();
 
 		PlayerPrefs.SetInt ("NumOfRooms", roomlist.Count);
 
@@ -1361,12 +1364,16 @@ public class room_loader : MonoBehaviour {
 
 	void MakeChests () {
 
+		string[] raritylist = { "common", "common", "common", "common", "common", "uncommon", "uncommon", "uncommon", "uncommon", "rare", "rare", "rare", "very rare", "very rare", "artifact"};
+		string chosenrarity = raritylist [Random.Range (0, raritylist.Length)];
+
 		for (int i = 1; i <= roomlist.Count; i++) {
 
 			GameObject r = GameObject.Find ("room_" + i);
 
 			foreach (Transform t in r.transform) {
 				if (t.gameObject.name == "Treasurespot") {
+					PlayerPrefs.SetInt ("NumOfChests", PlayerPrefs.GetInt("NumOfChests") + 1);
 					GameObject c = Instantiate (chestasset, t.position, t.localRotation);
 					c.transform.rotation = t.rotation;
 					c.transform.parent = r.transform;
@@ -1386,11 +1393,31 @@ public class room_loader : MonoBehaviour {
 			while (true) {
 				int rand = Random.Range (0, Player.GetComponent<inventory>().catalog.Count);
 				print(rand + " " + Player.GetComponent<inventory>().catalog.Count);
-				if (Player.GetComponent<inventory>().catalog [rand].name != "Dungeon Key") {
+				if (Player.GetComponent<inventory>().catalog [rand].name != "Dungeon Key" && chosenrarity == Player.GetComponent<inventory>().catalog [rand].rarity) {
 					g.GetComponent<chest_items> ().storage.Add (Player.GetComponent<inventory>().catalog [rand]);
 					g.GetComponent<chest_items> ().gold = Random.Range (20, 101);
 					break;
 				}
+			}
+
+		}
+
+	}
+
+	void SpawnEnemies () {
+
+		for (int i = 1; i <= roomlist.Count; i++) {
+
+			GameObject room = GameObject.Find ("room_" + i);
+			foreach (Transform t in room.transform) {
+
+				if (t.gameObject.name == "Enemyspot") {
+
+					GameObject e = Instantiate (Resources.Load<GameObject> ("Basicenemy"), t.position, Quaternion.identity);
+					e.transform.parent = t;
+
+				}
+
 			}
 
 		}

@@ -13,8 +13,10 @@ public class inventory : MonoBehaviour {
 
 	public GameObject cio;
 	public Item curritem;
+	public int health;
 
 	public bool attacking;
+	public bool iframes;
 
 	public class Item {
 
@@ -28,6 +30,8 @@ public class inventory : MonoBehaviour {
 		public string kind;
 		public int damage;
 		public float speed;
+		public string effecttype;
+		public float effectpotency;
 
 		// weapon
 		public Item (GameObject item, string name, string description, string rarity, Sprite icon, float weight, string kind, int damage, float speed) {
@@ -57,6 +61,21 @@ public class inventory : MonoBehaviour {
 			this.setRarityColor(rarity);
 		}
 
+		//potion
+		public Item (GameObject item, string name, string description, string rarity, Sprite icon, float weight, string kind, string effecttype, float effectpotency) {
+			this.item = item;
+			this.name = name;
+			this.description = description;
+			this.rarity = rarity;
+			this.icon = icon;
+			this.weight = weight;
+			this.kind = kind;
+			this.effecttype = effecttype;
+			this.effectpotency = effectpotency;
+
+			this.setRarityColor(rarity);
+		}
+
 		public void setRarityColor (string r) {
 			if (r == "common") {
 				this.color = new Color32(0, 0, 0, 255);
@@ -80,6 +99,7 @@ public class inventory : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		attacking = false;
+		health = 100;
 
 		GameObject[] itemarray = Resources.LoadAll<GameObject> ("Items");
 		foreach (GameObject go in itemarray) {
@@ -89,11 +109,15 @@ public class inventory : MonoBehaviour {
 			if (go.GetComponent<item_data> ().kind == "Key") {
 				catalog.Add (new Item (go.GetComponent<item_data> ().item, go.GetComponent<item_data> ().name, go.GetComponent<item_data> ().description, go.GetComponent<item_data> ().rarity, go.GetComponent<item_data> ().icon, go.GetComponent<item_data> ().weight, "Key"));
 			}
+			if (go.GetComponent<item_data> ().kind == "Potion") {
+				catalog.Add (new Item (go.GetComponent<item_data> ().item, go.GetComponent<item_data> ().name, go.GetComponent<item_data> ().description, go.GetComponent<item_data> ().rarity, go.GetComponent<item_data> ().icon, go.GetComponent<item_data> ().weight, "Potion", go.GetComponent<item_data> ().effecttype, go.GetComponent<item_data> ().effectpotency));
+			}
 			if (go.GetComponent<item_data>().name == "Sword") {
 				playerinventory.Add (findItem ("Sword"));
 				SetCurrentItem (findItem ("Sword"));
 			}
 		}
+		playerinventory.Add (findItem ("Minor Health Potion"));
 	}
 	
 	// Update is called once per frame
@@ -125,6 +149,27 @@ public class inventory : MonoBehaviour {
 		return false;
 	}
 
+	public void removeItem (Item i) {
+
+		for (int x = 0; x < playerinventory.Count; x++) {
+			if (playerinventory [x].name == i.name) {
+				playerinventory.Remove (playerinventory [x]);
+				break;
+			}
+		}
+
+	}
+
+	void OnTriggerEnter (Collider collision) {
+
+		if (collision.transform.parent != null) {
+			if (collision.transform.parent.gameObject.GetComponent<item_data> () && !iframes) {
+				StartCoroutine(TakeDamage (collision.transform.parent.gameObject.GetComponent<item_data> ().damage));
+			}
+		}
+
+	}
+
 	public void SetCurrentItem (Item item) {
 
 		curritem = item;
@@ -137,7 +182,7 @@ public class inventory : MonoBehaviour {
 	void OnCollisionEnter (Collision collision) {
 		print (collision.transform.name);
 
-		if (collision.transform.parent.gameObject.name == "enddoor(Clone)" && hasItem("Dungeon Key")) {
+		if (collision.transform.parent != null && collision.transform.parent.gameObject.name == "enddoor(Clone)" && hasItem("Dungeon Key")) {
 			GameObject.Destroy (collision.transform.parent.gameObject);
 		}
 
@@ -149,6 +194,10 @@ public class inventory : MonoBehaviour {
 	void OpenChest (GameObject chest) {
 
 		if (!chest.transform.parent.gameObject.GetComponent<chest_items> ().opened) {
+
+			PlayerPrefs.SetInt ("OpenedChests", PlayerPrefs.GetInt("OpenedChests") + 1);
+			PlayerPrefs.SetInt ("Gold", PlayerPrefs.GetInt ("Gold") + chest.transform.parent.gameObject.GetComponent<chest_items> ().gold);
+
 			chest.transform.parent.gameObject.GetComponent<chest_items> ().opened = true;
 			chest.transform.parent.gameObject.GetComponent<Animation> ().Play ("A_ChestOpen");
 
@@ -185,6 +234,24 @@ public class inventory : MonoBehaviour {
 		cio.GetComponent<Animation> ().Play ("A_HoldWeapon");
 			
 		attacking = false;
+
+		yield return null;
+
+	}
+
+	IEnumerator TakeDamage (int damage) {
+		if (health - damage > 0) {
+			health -= damage;
+		} else {
+			health = 0;
+			StartCoroutine (this.gameObject.GetComponent<camera_movement> ().DeathByEnemy ());
+		}
+		GameObject.Find ("Main Camera Screen/GameMenu/HealthBar").GetComponent<Slider> ().value = health;
+		GameObject.Find ("Main Camera Screen/GameMenu/HealthBar/Text").GetComponent<Text> ().text = health + " / 100";
+
+		iframes = true;
+		yield return new WaitForSeconds (0.5f);
+		iframes = false;
 
 		yield return null;
 

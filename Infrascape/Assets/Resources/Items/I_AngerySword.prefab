@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4155883135961942}
   - component: {fileID: 33223724992052416}
   - component: {fileID: 23780660759105434}
+  - component: {fileID: 64776006745087928}
   m_Layer: 0
   m_Name: group_0_10988977
   m_TagString: Untagged
@@ -185,6 +186,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1645927056158008}
   m_Mesh: {fileID: 4300002, guid: da58244b64b5d204eac109bff97c478c, type: 3}
+--- !u!64 &64776006745087928
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1044086312025038}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300000, guid: da58244b64b5d204eac109bff97c478c, type: 3}
 --- !u!111 &111762173096862878
 Animation:
   m_ObjectHideFlags: 1
@@ -213,14 +228,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 1537823183057502}
-  name: Angery Sword
+  name: Heated Blade
   description: A lightweight sword that has the sharpness of a regular sword with
     much greater speed. These swords are very rare, and you're very lucky for even
     finding this.
   rarity: artifact
   color: {r: 0, g: 0, b: 0, a: 0}
-  icon: {fileID: 21300000, guid: 84334c2dc56df374c839c7b8f31d65e4, type: 3}
+  icon: {fileID: 21300000, guid: d4020748e203a3b45a8e4f47c08f515b, type: 3}
   weight: 3
   kind: Weapon
   damage: 8
   speed: 1.5
+  effecttype: 
+  effectpotency: 0

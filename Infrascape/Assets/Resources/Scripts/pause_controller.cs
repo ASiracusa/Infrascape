@@ -35,6 +35,8 @@ public class pause_controller : MonoBehaviour {
 	private float InvLogLerp;
 
 	private GameObject EquipButton;
+	private GameObject DrinkButton;
+	private GameObject CopyButton;
 
 	public RawImage Leatherbacking;
 	public GameObject MapSection;
@@ -89,7 +91,11 @@ public class pause_controller : MonoBehaviour {
 		ItemLogHider.GetComponent<RectTransform> ().sizeDelta = new Vector2 (ItemLog.GetComponent<RectTransform> ().rect.width, ItemLog.GetComponent<RectTransform> ().rect.height);
 		InvLogHider.GetComponent<RectTransform> ().sizeDelta = new Vector2 (MiniMap.GetComponent<RectTransform> ().rect.width, InvLog.GetComponent<RectTransform> ().rect.height);
 
-		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (ItemLog.GetComponent<RectTransform> ().sizeDelta.x / 10 * 9, ItemLog.GetComponent<RectTransform> ().sizeDelta.y / 10 * 9);
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<RectTransform>().sizeDelta = ItemLog.GetComponent<RectTransform>().sizeDelta;
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<RectTransform>().transform.localPosition = new Vector3(0, 0, 0);
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<RectTransform> ().sizeDelta = new Vector2 (ItemLog.GetComponent<RectTransform> ().sizeDelta.x / 10 * 9, ItemLog.GetComponent<RectTransform> ().sizeDelta.y / 10 * 20);
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLogViewport").GetComponent<RectTransform> ().transform.localPosition = ItemLog.transform.localPosition;
+		GameObject.Find ("Main Camera Screen/GameMenu/ItemLogViewport").GetComponent<RectTransform> ().sizeDelta = new Vector2 (ItemLog.GetComponent<RectTransform> ().sizeDelta.x / 10 * 9, ItemLog.GetComponent<RectTransform> ().sizeDelta.y / 10 * 9);
 
 		Leatherbacking.gameObject.transform.position = new Vector3 (PauseMenu.GetComponent<RectTransform> ().rect.width / 2f, GameMenu.GetComponent<RectTransform>().rect.height / 2f, 0f);
 		Leatherbacking.GetComponent<RectTransform> ().sizeDelta = new Vector2 (PauseMenu.GetComponent<RectTransform> ().rect.width / 522 * 400, PauseMenu.GetComponent<RectTransform> ().rect.height / 326 * 250);
@@ -138,15 +144,23 @@ public class pause_controller : MonoBehaviour {
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3);
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/Icon").gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 64 * 19, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * -70, 0);
 
+		GameObject.Find ("Main Camera Screen/PauseMenu/SettingsSection/LeftPage/CopyButton").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/SettingsSection/LeftPage").GetComponent<RectTransform> ().rect.width / 4 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/SettingsSection/LeftPage").GetComponent<RectTransform> ().rect.width / 8);
+
 		EquipButton = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EquipButton") as GameObject;
 		EquipButton.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8);
 		EquipButton.gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -64 * 15, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * 80, 0);
 		EquipButton.SetActive (false);
 
+		DrinkButton = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DrinkButton") as GameObject;
+		DrinkButton.GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8 * 3, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / 8);
+		DrinkButton.gameObject.transform.localPosition = new Vector3 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.width / -64 * 15, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage").GetComponent<RectTransform> ().rect.height / 225 * 80, 0);
+		DrinkButton.SetActive (false);
+
+		CopyButton = GameObject.Find ("Main Camera Screen/PauseMenu/SettingsSection/LeftPage/CopyButton") as GameObject;
+		CopyButton.GetComponent<Button> ().onClick.AddListener (CopySeed);
+
 		GameObject.Find ("Main Camera Screen/GameMenu/HealthBar").gameObject.transform.localPosition = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / -10 * 4);
 		GameObject.Find ("Main Camera Screen/GameMenu/DungeonClock").gameObject.transform.localPosition = new Vector3 (0, GameMenu.GetComponent<RectTransform> ().rect.height / 20 * 9);
-		print (PauseMenu.GetComponent<RectTransform> ().rect.width);
-		print (PauseMenu.GetComponent<RectTransform> ().rect.height);
 
 		StartCoroutine (DungeonClock());
 		PauseMenu.SetActive (false);
@@ -454,28 +468,32 @@ public class pause_controller : MonoBehaviour {
 
 	void DisplayInventory () {
 
-		print ("displayedd");
+		GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/RightPage/GoldText").GetComponent<Text> ().text = "Gold: " + PlayerPrefs.GetInt ("Gold");
 
+		print ("step 1");
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width / 5 * Player.GetComponent<inventory> ().playerinventory.Count);
 
 		List<INV.Item> inventory = Player.GetComponent<inventory> ().playerinventory;
 		List<GameObject> itempanels = new List<GameObject> ();
 
 		for (int i = 0; i < inventory.Count; i++) {
+			print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.childCount);
 			bool exists = false;
 			INV.Item curritem = inventory [i];
 			foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform) {
+				print (t.name);
 				if (t.name == "Item (" + inventory[i].name + ")") {
 					t.gameObject.transform.GetChild (1).GetComponent<Text> ().text = (int.Parse(t.gameObject.transform.GetChild (1).GetComponent<Text> ().text.Substring (0, t.gameObject.transform.GetChild (1).GetComponent<Text> ().text.Length - 4)) + 1) + "x   ";
 					exists = true;
 					break;
 				}
 			}
-			print ("displayeddd");
-			if (exists)
+			if (exists) {
+				print ("it exists apparently?");
 				continue;
-			print ("displayedddd");
+			}
 			GameObject go = Instantiate (Resources.Load("Menu/ItemContainer"), GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform) as GameObject;
+			print ("step 3");
 			//go.transform.parent = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform;
 			print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().rect.height);
 			go.transform.localPosition = new Vector3(0, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform>().rect.height / 2 - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 10) - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 5 * i), 0);
@@ -489,6 +507,9 @@ public class pause_controller : MonoBehaviour {
 			}
 			if (curritem.kind == "Key") {
 				go.GetComponent<Image> ().color = new Color32(196, 133, 31, 255);
+			}
+			if (curritem.kind == "Potion") {
+				go.GetComponent<Image> ().color = new Color32(69, 160, 79, 255);
 			}
 			go.GetComponent<Button>().onClick.AddListener(delegate { DisplayItemDetails(curritem); });
 
@@ -508,12 +529,21 @@ public class pause_controller : MonoBehaviour {
 		if (i.kind == "Weapon") {
 			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Damage: " + i.damage;
 			EquipButton.SetActive (true);
+			DrinkButton.SetActive (false);
 			EquipButton.GetComponent<Button> ().onClick.RemoveAllListeners ();
 			EquipButton.GetComponent<Button>().onClick.AddListener(delegate {Player.GetComponent<inventory>().SetCurrentItem(i);});
 		}
 		if (i.kind == "Key") {
 			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Unlocks: Exit";
 			EquipButton.SetActive (false);
+			DrinkButton.SetActive (false);
+		}
+		if (i.kind == "Potion") {
+			GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/EffectText").GetComponent<Text> ().text = "Heals: " + i.effectpotency + " HP";
+			EquipButton.SetActive (false);
+			DrinkButton.SetActive (true);
+			DrinkButton.GetComponent<Button> ().onClick.RemoveAllListeners ();
+			DrinkButton.GetComponent<Button>().onClick.AddListener(delegate {DrinkPotion(i);});
 		}
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/ValueAndWeightText").GetComponent<Text> ().text = "Weight: " + i.weight + " lbs";
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/DescriptionBox/Text").GetComponent<Text> ().text = i.description;
@@ -523,8 +553,12 @@ public class pause_controller : MonoBehaviour {
 
 	public void ResetDetails () {
 		foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform) {
-			GameObject.Destroy (t.gameObject);
+			GameObject.Destroy(t.gameObject);
 		}
+		print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.childCount);
+
+//		EquipButton.SetActive (false);
+//		DrinkButton.SetActive (false);
 
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/NameText").GetComponent<Text> ().text = "Click an Item!";
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/RightPage/KindText").GetComponent<Text> ().text = "";
@@ -555,7 +589,31 @@ public class pause_controller : MonoBehaviour {
 
 	}
 
+	void DrinkPotion (INV.Item i) {
 
+		if (i.effecttype == "Healing") {
+			Player.GetComponent<inventory>().health += (int)i.effectpotency;
+			if (Player.GetComponent<inventory>().health > 100) {
+				Player.GetComponent<inventory>().health = 100;
+			}
+			Player.GetComponent<inventory> ().removeItem (i);
+			ClosePauseMenu ();
+			GameObject.Find ("Main Camera Screen/GameMenu/HealthBar").GetComponent<Slider> ().value = Player.GetComponent<inventory> ().health;
+			GameObject.Find ("Main Camera Screen/GameMenu/HealthBar/Text").GetComponent<Text> ().text = Player.GetComponent<inventory> ().health + " / 100";
+
+		}
+
+	}
+
+	void CopySeed () {
+
+		TextEditor te = new TextEditor ();
+		te.content = new GUIContent (PlayerPrefs.GetString ("DungeonSeed"));
+		print (te.content);
+		te.SelectAll ();
+		te.Copy ();
+
+	}
 
 //	void OnTriggerEnter (Collider collision) {
 //
