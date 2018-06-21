@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Linq;
 using INV = inventory;
+using MENU = menu_manager;
 
 public class room_loader : MonoBehaviour {
 
@@ -31,7 +32,7 @@ public class room_loader : MonoBehaviour {
 	private string dungeonname;
 	private int seednumber;
 
-	private int crashcount = 0;
+	public int crashcount;
 	private string roomtype;
 	private List<GameObject> mainroomlist;
 	private List<GameObject> connectorlist;
@@ -41,10 +42,10 @@ public class room_loader : MonoBehaviour {
 	string recentdirection;
 
 	public List<Room> roomlist = new List<Room>();
-	GameObject[] roomloadarray;
-	List<GameObject> roomloadlist;
-	List<PTR> ptrlist = new List<PTR>();
-	List<GameObject> roomchoices;
+	private GameObject[] roomloadarray;
+	private List<GameObject> roomloadlist;
+	private List<PTR> ptrlist = new List<PTR>();
+	private List<GameObject> roomchoices;
 	private GameObject doorasset;
 	private GameObject fullwallasset;
 	private GameObject leftwallasset;
@@ -56,6 +57,8 @@ public class room_loader : MonoBehaviour {
 	private string stairname;
 
 	private List<GameObject> chestlist = new List<GameObject> ();
+
+	private bool failed;
 
 	/* ////////// ROOM OBJECTS ////////// */
 
@@ -125,6 +128,8 @@ public class room_loader : MonoBehaviour {
 
 	void Start () {
 
+		crashcount = 0;
+		failed = false;
 		Player = GameObject.Find ("Player");
 
 		DungeonSeed = PlayerPrefs.GetString ("DungeonSeed");
@@ -203,10 +208,12 @@ public class room_loader : MonoBehaviour {
 		else {
 			MakeRooms (currentlevel, DungeonVal1 [currentlevel], "down");
 		}
-		MakeDoors ();
-		MakeFloorHazard ();
-		MakeChests ();
-		SpawnEnemies ();
+		if (!failed) {
+			MakeDoors ();
+			MakeFloorHazard ();
+			MakeChests ();
+			SpawnEnemies ();
+		}
 
 		PlayerPrefs.SetInt ("NumOfRooms", roomlist.Count);
 
@@ -287,12 +294,12 @@ public class room_loader : MonoBehaviour {
 		}
 
 		seednumber = int.Parse (seedstring);
-		seednumber += PlayerPrefs.GetInt ("CrashMod");
+
+		print (seedstring);
 
 		self.GetComponent<dungeon_names> ().GenerateNames (seednumber);
 		dungeonname = self.GetComponent<dungeon_names> ().dungeonname;
 		PlayerPrefs.SetString ("DungeonName", dungeonname);
-		print (dungeonname);
 
 		GameObject.Find ("Main Camera Screen/GameMenu/ItemLog/ItemText").GetComponent<Text> ().text = "You entered the " + dungeonname;
 
@@ -302,7 +309,8 @@ public class room_loader : MonoBehaviour {
 
 	void MakeRooms (int currentlevel, string roomkey, string eledirection) {
 
-		Random.seed = seednumber + currentlevel;
+		int seed = seednumber + currentlevel;
+		Random.InitState(seed);
 
 		roomtype = "mainrooms";
 		int dir = 0;
@@ -511,10 +519,33 @@ public class room_loader : MonoBehaviour {
 				}
 			}
 
-			if (crashcount >= 50) {
+			print ("????");
+
+			if (crashcount >= 100) {
+
+				print ("crashed");
+				failed = true;
 				crashcount = 0;
-				PlayerPrefs.SetInt ("CrashMod", PlayerPrefs.GetInt ("CrashMod") + 1);
-				SceneManager.LoadScene ("Game");
+				PlayerPrefs.SetInt ("CrashMod", 1);
+
+				string gs = GenerateSeed ();
+				PlayerPrefs.SetString("DungeonSeed", gs);
+				PlayerPrefs.SetInt ("Restarts", PlayerPrefs.GetInt ("Restarts") + 1);
+				int re = PlayerPrefs.GetInt ("Restart");
+
+				for (int s = 0; s < SceneManager.sceneCount; s++) {
+					string sname = SceneManager.GetSceneAt (s).name;
+					print (sname);
+					if (s > 0) {
+						SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (s));
+					}
+
+				}
+ 
+				SceneManager.LoadSceneAsync ("DungeonReloader");
+//				SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt(1));
+
+				break;
 			}
 
 		}
@@ -542,8 +573,6 @@ public class room_loader : MonoBehaviour {
 				}
 			}
 		}
-
-		print (doorlist.Count);
 
 		bool hasdoor = false;
 
@@ -1384,8 +1413,6 @@ public class room_loader : MonoBehaviour {
 		}
 
 		int ind = Random.Range(0, chestlist.Count - 1);
-		print (ind + " " + chestlist.Count);
-		print (chestlist [ind].name);
 		chestlist [ind].GetComponent<chest_items> ().storage.Add (Player.GetComponent<inventory>().findItem ("Dungeon Key"));
 
 		foreach (GameObject g in chestlist) {
@@ -1424,4 +1451,94 @@ public class room_loader : MonoBehaviour {
 
 	}
 
+	public string GenerateSeed () {
+
+		// 1
+		string newseed = "B";
+
+		// 2
+		string[] dtypes = { "B", "C", "D", "M" };
+		int rn = Random.Range (0, dtypes.Length);
+		newseed += dtypes [rn];
+
+		// 3 & 4
+		string[] uplist = { "C", "B" };
+		string[] downlist = { "D", "B" };
+		if (newseed[1] == 'M') {
+			newseed += "10";
+		}
+		else if (uplist.Contains ("" + newseed [1]) && downlist.Contains ("" + newseed [1])) {
+			newseed += "" + Random.Range (2, 5) + Random.Range (1, 4);
+		}
+		else if (uplist.Contains ("" + newseed [1])) {
+			newseed += "" + Random.Range (2, 5) + "0";
+		}
+		else if (downlist.Contains ("" + newseed [1])) {
+			newseed += "1" + Random.Range (1, 4);
+		}
+
+		// 5 - 8
+		string[] layoutlist = { "4022", "4011", "2022", "0411", "0222" };
+		newseed += layoutlist [Random.Range (0, layoutlist.Length)];
+
+		// room setup snippet
+		print(newseed);
+		int numfloors = int.Parse("" + newseed[2]) + int.Parse("" + newseed[3]);
+		int maxrooms = (int.Parse("" + newseed[4]) + 1 + int.Parse("" + newseed[5])) * (int.Parse("" + newseed[6]) + 1 + int.Parse("" + newseed[7]));
+
+		string[] ends = { "mmmmmccett", "mmmmccett", "mmmcettt", "mmmcet", "mmmccett" };
+		string[] nostairs = { "mmmmmcctt", "mmmmcctt", "mmmcttt", "mmmct", "mmmcctt" };
+		string[] onestairs = { "mmmmmscctt", "mmmmscctt", "mmmscttt", "mmmsct", "mmmscctt" };
+		string[] twostairs = { "mmmmmsscctt", "mmmmsscctt", "mmmsscttt", "mmmssct", "mmmsscctt" };
+
+		bool endmade = false;
+
+		int i = 1;
+		while (i <= numfloors) {
+			if (i == 1 && uplist.Contains ("" + newseed [1]) && downlist.Contains ("" + newseed [1])) {
+				rn = Random.Range (0, twostairs.Length);
+				if (twostairs [rn].Length > maxrooms)
+					continue;
+				newseed += "" + twostairs [rn] + "_";
+				i++;
+
+			} else if (i == numfloors || (uplist.Contains ("" + newseed [1]) && downlist.Contains ("" + newseed [1]) && i == int.Parse ("" + newseed [2]))) {
+				rn = Random.Range (0, nostairs.Length);
+				if (endmade && nostairs [rn].Length > maxrooms || !endmade && ends [rn].Length > maxrooms)
+					continue;
+				if (endmade) {
+					newseed += "" + nostairs [rn] + "_";
+				} else {
+					newseed += "" + ends [rn] + "_";
+					endmade = true;
+					print("this shouldn't be printed");
+				}
+				i++;
+			} else {
+				rn = Random.Range (0, onestairs.Length);
+				if (onestairs [rn].Length > maxrooms)
+					continue;
+				newseed += "" + onestairs [rn] + "_";
+				i++;
+			}
+		}
+
+		// random seed snippet]
+		int ran = Random.Range(0, 99999999);
+		newseed = newseed + ran;
+		Random.InitState(ran);
+
+		// send seed
+		print(newseed);
+
+		TextEditor te = new TextEditor ();
+		te.content = new GUIContent (newseed);
+		te.SelectAll ();
+		te.Copy ();
+
+		PlayerPrefs.SetString ("DungeonSeed", newseed);
+		return newseed;
+
+	}
+	
 }

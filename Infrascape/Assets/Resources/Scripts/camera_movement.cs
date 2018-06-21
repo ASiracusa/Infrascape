@@ -41,8 +41,6 @@ public class camera_movement : MonoBehaviour {
 
 	void OnTriggerEnter (Collider collision) {
 
-		print ("enter");
-
 		if (collision.gameObject.name == "Endtrigger") {
 			PlayerPrefs.SetString ("Cutscene", "true");
 			int visittotal = 0;

@@ -23,6 +23,7 @@ public class menu_manager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		PlayerPrefs.SetInt ("CrashMod", 0);
+		PlayerPrefs.SetInt ("Restarts", 0);
 
 		playbtn.onClick.AddListener (PlayButton);
 		quitbtn.onClick.AddListener (QuitButton);
@@ -113,10 +114,10 @@ public class menu_manager : MonoBehaviour {
 		int numfloors = int.Parse("" + newseed[2]) + int.Parse("" + newseed[3]);
 		int maxrooms = (int.Parse("" + newseed[4]) + 1 + int.Parse("" + newseed[5])) * (int.Parse("" + newseed[6]) + 1 + int.Parse("" + newseed[7]));
 
-		string[] ends = { "mmmmmccett", "mmmmccett", "mmmett", "mmmcet", "mmmccett" };
-		string[] nostairs = { "mmmmmcctt", "mmmmcctt", "mmmtt", "mmmct", "mmmcctt" };
-		string[] onestairs = { "mmmmmscctt", "mmmmscctt", "mmmstt", "mmmsct", "mmmscctt" };
-		string[] twostairs = { "mmmmmsscctt", "mmmmsscctt", "mmmsstt", "mmmssct", "mmmsscctt" };
+		string[] ends = { "mmmmmccett", "mmmmccett", "mmmcettt", "mmmcet", "mmmccett" };
+		string[] nostairs = { "mmmmmcctt", "mmmmcctt", "mmmcttt", "mmmct", "mmmcctt" };
+		string[] onestairs = { "mmmmmscctt", "mmmmscctt", "mmmscttt", "mmmsct", "mmmscctt" };
+		string[] twostairs = { "mmmmmsscctt", "mmmmsscctt", "mmmsscttt", "mmmssct", "mmmsscctt" };
 
 		bool endmade = false;
 
@@ -124,15 +125,19 @@ public class menu_manager : MonoBehaviour {
 		while (i <= numfloors) {
 			if (i == 1 && uplist.Contains ("" + newseed [1]) && downlist.Contains ("" + newseed [1])) {
 				rn = Random.Range (0, twostairs.Length);
-				if (twostairs [rn].Length > maxrooms)
+				if (twostairs [rn].Length > maxrooms) {
+					print ("max");
 					continue;
+				}
 				newseed += "" + twostairs [rn] + "_";
 				i++;
 
 			} else if (i == numfloors || (uplist.Contains ("" + newseed [1]) && downlist.Contains ("" + newseed [1]) && i == int.Parse ("" + newseed [2]))) {
 				rn = Random.Range (0, nostairs.Length);
-				if (endmade && nostairs [rn].Length > maxrooms || !endmade && ends [rn].Length > maxrooms)
+				if (endmade && nostairs [rn].Length > maxrooms || !endmade && ends [rn].Length > maxrooms) {
+					print ("max");
 					continue;
+				}
 				if (endmade) {
 					newseed += "" + nostairs [rn] + "_";
 				} else {
@@ -143,8 +148,10 @@ public class menu_manager : MonoBehaviour {
 				i++;
 			} else {
 				rn = Random.Range (0, onestairs.Length);
-				if (onestairs [rn].Length > maxrooms)
+				if (onestairs [rn].Length > maxrooms) {
+					print ("max");
 					continue;
+				}
 				newseed += "" + onestairs [rn] + "_";
 				i++;
 			}

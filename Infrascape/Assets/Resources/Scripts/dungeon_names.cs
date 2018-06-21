@@ -20,7 +20,7 @@ public class dungeon_names : MonoBehaviour {
 
 	public void GenerateNames (int seed) {
 
-		Random.seed = seed;
+		Random.InitState(seed);
 		int n1 = Random.Range (0, firsts.Length);
 		int n2 = Random.Range (0, lasts.Length);
 		dungeonname = firsts [n1] + " " + lasts [n2];

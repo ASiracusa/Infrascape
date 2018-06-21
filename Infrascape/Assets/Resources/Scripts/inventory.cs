@@ -124,7 +124,6 @@ public class inventory : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKey (AttackButton) && !attacking) {
-			print ("!!!");
 			StartCoroutine(AttackWithWeapon ());
 		}
 
@@ -215,8 +214,6 @@ public class inventory : MonoBehaviour {
 	}
 
 	IEnumerator AttackWithWeapon () {
-
-		print ("hello");
 
 		attacking = true;
 

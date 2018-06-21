@@ -9,7 +9,7 @@ using INV = inventory;
 
 public class pause_controller : MonoBehaviour {
 
-	private static bool GameIsPaused = false;
+	private bool GameIsPaused = false;
 
 	public GameObject Player;
 	public GameObject Roomloader;
@@ -303,7 +303,6 @@ public class pause_controller : MonoBehaviour {
 			CurrItemLerp = Time.time;
 		}
 		else if (ItemLogOpen == "opened") {
-			print (CurrItem.transform.position);
 			CurrItemOpen = "close";
 			CurrItemLerp = Time.time;
 		}
@@ -317,7 +316,6 @@ public class pause_controller : MonoBehaviour {
 			InvLogLerp = Time.time;
 		}
 		else if (ItemLogOpen == "opened") {
-			print (InvLog.transform.position);
 			InvLogOpen = "close";
 			InvLogLerp = Time.time;
 		}
@@ -470,18 +468,17 @@ public class pause_controller : MonoBehaviour {
 
 		GameObject.Find ("Main Camera Screen/PauseMenu/MapSection/RightPage/GoldText").GetComponent<Text> ().text = "Gold: " + PlayerPrefs.GetInt ("Gold");
 
-		print ("step 1");
 		GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage").GetComponent<RectTransform> ().rect.width / 5 * 4, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width / 5 * Player.GetComponent<inventory> ().playerinventory.Count);
 
 		List<INV.Item> inventory = Player.GetComponent<inventory> ().playerinventory;
 		List<GameObject> itempanels = new List<GameObject> ();
 
 		for (int i = 0; i < inventory.Count; i++) {
-			print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.childCount);
+
 			bool exists = false;
 			INV.Item curritem = inventory [i];
 			foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform) {
-				print (t.name);
+				
 				if (t.name == "Item (" + inventory[i].name + ")") {
 					t.gameObject.transform.GetChild (1).GetComponent<Text> ().text = (int.Parse(t.gameObject.transform.GetChild (1).GetComponent<Text> ().text.Substring (0, t.gameObject.transform.GetChild (1).GetComponent<Text> ().text.Length - 4)) + 1) + "x   ";
 					exists = true;
@@ -489,19 +486,15 @@ public class pause_controller : MonoBehaviour {
 				}
 			}
 			if (exists) {
-				print ("it exists apparently?");
 				continue;
 			}
 			GameObject go = Instantiate (Resources.Load("Menu/ItemContainer"), GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform) as GameObject;
-			print ("step 3");
 			//go.transform.parent = GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").gameObject.transform;
-			print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform> ().rect.height);
 			go.transform.localPosition = new Vector3(0, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").GetComponent<RectTransform>().rect.height / 2 - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 10) - (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform>().rect.height / 5 * i), 0);
 			go.GetComponent<RectTransform>().sizeDelta = new Vector2 (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.width, GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel").GetComponent<RectTransform> ().rect.height / 5);
 			go.gameObject.name = "Item (" + curritem.name + ")";
 			go.transform.GetChild (0).GetComponent<Text> ().text = "  " + curritem.name;
 			go.transform.GetChild (1).GetComponent<Text> ().text = "1x   ";
-			print (curritem.kind);
 			if (curritem.kind == "Weapon") {
 				go.GetComponent<Image> ().color = new Color32(193, 79, 79, 255);
 			}
@@ -555,7 +548,6 @@ public class pause_controller : MonoBehaviour {
 		foreach (Transform t in GameObject.Find("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform) {
 			GameObject.Destroy(t.gameObject);
 		}
-		print (GameObject.Find ("Main Camera Screen/PauseMenu/InventorySection/LeftPage/InventoryPanel/ItemArea").transform.childCount);
 
 //		EquipButton.SetActive (false);
 //		DrinkButton.SetActive (false);
@@ -609,7 +601,6 @@ public class pause_controller : MonoBehaviour {
 
 		TextEditor te = new TextEditor ();
 		te.content = new GUIContent (PlayerPrefs.GetString ("DungeonSeed"));
-		print (te.content);
 		te.SelectAll ();
 		te.Copy ();
 
